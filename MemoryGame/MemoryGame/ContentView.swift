@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: [String] = ["👨🏼‍🔬","👨🏼‍⚖️","👨🏼‍💻","🧑🏼‍🏫"]
+    let emojis: [String] = ["👨🏼‍🔬","👨🏼‍⚖️","👨🏼‍💻","🧑🏼‍🏫", "👨🏼‍🍳","👨🏼‍🌾","💂🏼‍♂️","👨🏼‍🎨"]
+    let foo = Int.random(in: 2...8)
     @State var Cardcount = 4
     var body: some View {
         VStack{
@@ -29,7 +30,7 @@ struct ContentView: View {
             ForEach(0..<Cardcount, id: \.self) { index in
                 CardView(content: emojis[index])
             }.aspectRatio(2/3,contentMode: .fill)
-            .foregroundColor(.black)
+                .foregroundColor(.gray)
         }
     }
     
