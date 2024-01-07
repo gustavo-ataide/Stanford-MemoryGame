@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EmojiMemoryGameView: View {
-    var viewModel:EmojiMemoryGame
+    @ObservedObject var viewModel : EmojiMemoryGame
     let emojis: [String] = ["👨🏼‍🔬","👨🏼‍⚖️","👨🏼‍💻","🧑🏼‍🏫", "👨🏼‍🍳","👨🏼‍🌾","💂🏼‍♂️","👨🏼‍🎨"]
     let foo = Int.random(in: 2...8)
     @State var Cardcount = 4
@@ -16,9 +16,13 @@ struct EmojiMemoryGameView: View {
         VStack{
             ScrollView{
                 Cards
+                    .animation(.default, value: viewModel.cards)
+            }
+            Button("Shuffle"){
+                viewModel.shuffle()
             }
             
-            Spacer()
+//            Spacer()
             CardsAdjusters
             
         }.padding()
@@ -27,11 +31,13 @@ struct EmojiMemoryGameView: View {
     
     
     var Cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]) {
-            ForEach(0..<Cardcount, id: \.self) { index in
-                CardView( content: emojis[index])
-            }.aspectRatio(2/3,contentMode: .fill)
-                .foregroundColor(.gray)
+        LazyVGrid(columns: [GridItem(.adaptive(minimum:85), spacing: 0)], spacing: 0) {
+            ForEach(viewModel.cards) { card in
+                CardView(card)
+                    .aspectRatio(2/3,contentMode: .fill)
+                        .foregroundColor(.gray)
+                        .padding(4)
+            }
         }
     }
     
@@ -64,12 +70,15 @@ struct EmojiMemoryGameView: View {
         return cardCountAdjuster(by: +1, symbol: "rectangle.stack.badge.plus.fill")
     }
     
+    
     struct CardView: View{
-        var modelview: EmojiMemoryGame
-        @State var IsFaceUp:Bool = false
-        let texto = "Just works"
+//        var modelview: EmojiMemoryGame
+        let card:MemoryGame<String>.Card
         
-        let content: String
+        init(_ card: MemoryGame<String>.Card) {
+            self.card = card
+        }
+        
         var body: some View{
             
             let base  = RoundedRectangle(cornerRadius: 12)
@@ -77,24 +86,24 @@ struct EmojiMemoryGameView: View {
                 Group{
                     base.foregroundColor(.white)
                     base.strokeBorder(lineWidth: 2)
-                    VStack{
-                        Text(content).font(.largeTitle)
-                        Text(texto).font(.caption)
-                    }
+                    Text(card.Content)
+                        .font(.system(size: 200))
+                        .minimumScaleFactor(0.01)
+                        .aspectRatio(1,contentMode: .fit)
                     
                 }
-                .opacity(IsFaceUp ? 1 : 0)
-                base.fill().opacity(IsFaceUp ? 0 : 1)
-            }.onTapGesture {
-                IsFaceUp.toggle()
+                .opacity(card.IsFaceUp ? 1 : 0)
+                base.fill().opacity(card.IsFaceUp ? 0 : 1)
             }
+//            .onTapGesture {
+//                EmojiMemoryGame.faceupdown(self)
+//            }
             
         }
     }
 }
     #Preview {
-        EmojiMemoryGameView()
+        EmojiMemoryGameView(viewModel: EmojiMemoryGame())
     }
 
-    
 
